@@ -53,6 +53,11 @@ class User
     */
     private $phones;
     
+    /**
+    * @ORM\OneToMany(targetEntity="Email", mappedBy="userId")
+    */
+    private $emails;
+    
     public function __construct() {
         $this->reviews = new ArrayCollection();
     }

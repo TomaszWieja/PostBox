@@ -6,6 +6,8 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use PostBoxBundle\Entity\User;
 use PostBoxBundle\Entity\Address;
+use PostBoxBundle\Entity\Phone;
+use PostBoxBundle\Entity\Email;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Doctrine\ORM\EntityManagerInterface;
@@ -75,9 +77,28 @@ class UserController extends Controller
                 ->add('Add Address', 'submit')
                 ->getForm();
         
+        $newPhone = new Phone();
+        $formPhone = $this->createFormBuilder($newPhone)
+                ->setAction("/$id/addPhone")
+                ->add('number', 'number')
+                ->add('type', 'text')
+                ->add('Add phone', 'submit')
+                ->getForm();
+        
+        $newEmail = new Email();
+        $formEmail = $this->createFormBuilder($newEmail)
+                ->setAction("/$id/addEmail")
+                ->add('email', 'text')
+                ->add('type', 'text')
+                ->add('Add email', 'submit')
+                ->getForm();
+        
+        
         return $this->render('PostBoxBundle:User:modify.html.twig', array(
             'form' => $form->createView(),
-            'formAddress' => $formAddress->createView()
+            'formAddress' => $formAddress->createView(),
+            'formPhone' => $formPhone->createView(),
+            'formEmail' => $formEmail->createView()
         ));
     }
 
