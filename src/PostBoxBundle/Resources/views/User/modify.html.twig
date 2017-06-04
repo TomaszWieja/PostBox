@@ -1,0 +1,14 @@
+{% extends "::base.html.twig" %}
+
+{% block title %}PostBoxBundle:User:modify{% endblock %}
+
+{% block body %}
+<h1>Welcome to the User:modify page</h1>
+{{ form_start(form) }}
+{{ form_widget(form) }}
+{{ form_end(form) }}
+
+{{ form_start(formAddress) }}
+{{ form_widget(formAddress) }}
+{{ form_end(formAddress) }}
+{% endblock %}
