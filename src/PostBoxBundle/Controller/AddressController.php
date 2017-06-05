@@ -7,7 +7,8 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use PostBoxBundle\Entity\Address;
 use Symfony\Component\HttpFoundation\Request;
 use PostBoxBundle\Entity\User;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
+
+
 
 class AddressController extends Controller
 {
@@ -30,11 +31,53 @@ class AddressController extends Controller
         $em = $this->getDoctrine()->getManager();
         $em->persist($newAddress);
         $em->flush();
+        return $this->redirect("/".$user->getId());
         
         
-        return $this->render('PostBoxBundle:Address:add_address.html.twig', array(
-            // ...
+    }
+    
+    /**
+     * @Route("/{id}/modifyAddress")
+     */
+    public function modifyAddressAction(Request $request, $id) {
+        
+        $repository = $this->getDoctrine()->getRepository('PostBoxBundle:Address');
+        $address = $repository->find($id);
+        
+        $form = $this->createFormBuilder($address)
+                ->add('city', 'text')
+                ->add('street', 'text')
+                ->add('blockNo', 'text')
+                ->add('apartmentsNo', 'text')
+                ->add('Update', 'submit')
+                ->getForm();
+        
+        $form->handleRequest($request);
+        
+        if ($form->isSubmitted()) {
+            $newAddress = $form->getData();
+            $em = $this->getDoctrine()->getManager();
+            $em->persist($newAddress);
+            $em->flush();
+            return $this->redirect("/".$address->getUserId()->getId());
+        }
+        
+        return $this->render('PostBoxBundle:Address:modify_address.html.twig', array(
+            'form' => $form->createView()
         ));
     }
-
+    
+    /**
+     * @Route("/{id}/deleteAddress")
+     */
+    public function deleteAddressAction($id) {
+        
+        $repository = $this->getDoctrine()->getRepository('PostBoxBundle:Address');
+        $address = $repository->find($id);
+        $userId = $address->getUserId()->getId();
+        $em = $this->getDoctrine()->getManager();
+        $em->remove($address);
+        $em->flush();
+        return $this->redirect("/".$userId);
+    }
 }

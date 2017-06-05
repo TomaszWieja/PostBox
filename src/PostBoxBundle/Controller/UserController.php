@@ -11,7 +11,7 @@ use PostBoxBundle\Entity\Email;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Component\Form\Extension\Core\Type\HiddenType;
+use Doctrine\ORM\EntityRepository;
 
 class UserController extends Controller
 {
@@ -35,7 +35,7 @@ class UserController extends Controller
             $em = $this->getDoctrine()->getManager();
             $em->persist($newUser);
             $em->flush();
-            
+            return $this->redirect("/");
         }
         
         return $this->render('PostBoxBundle:User:new.html.twig', array(
@@ -116,10 +116,8 @@ class UserController extends Controller
         $em = $this->getDoctrine()->getManager();
         $em->remove($user);
         $em->flush();
+        return $this->redirect("/");
         
-        return $this->render('PostBoxBundle:User:delete.html.twig', array(
-            // ...
-        ));
     }
 
     /**
@@ -129,13 +127,24 @@ class UserController extends Controller
     {
         $repository = $this->getDoctrine()->getRepository('PostBoxBundle:User');
         $user = $repository->find($id);
-        
+
         if (!$user) {
             return new Response("Użytkownik nie istnieje");
         }
+        $repository = $this->getDoctrine()->getRepository('PostBoxBundle:Address');
+        $addresses = $repository->findByUserId($id);
         
+        $repository = $this->getDoctrine()->getRepository('PostBoxBundle:Email');
+        $emails = $repository->findByUserId($id);
+        
+        $repository = $this->getDoctrine()->getRepository('PostBoxBundle:Phone');
+        $phones = $repository->findByUserId($id);
+
         return $this->render('PostBoxBundle:User:get.html.twig', array(
-            'user' => $user
+            'user' => $user,
+            'addresses' => $addresses,
+            'emails' => $emails,
+            'phones' => $phones
         ));
     }
 
@@ -143,9 +152,10 @@ class UserController extends Controller
      * @Route("/")
      */
     public function getAllAction()
-    {
-        $repository = $this->getDoctrine()->getRepository('PostBoxBundle:User');
-        $allUsers = $repository->findAll();
+    {        
+        $em = $this->getDoctrine()->getManager();
+        $query = $em->createQuery('SELECT u FROM PostBoxBundle:User u ORDER BY u.surname');        
+        $allUsers = $query->getResult();
 
         return $this->render('PostBoxBundle:User:get_all.html.twig', array(
             'allUsers' => $allUsers

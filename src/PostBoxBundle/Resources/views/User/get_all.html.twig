@@ -3,11 +3,13 @@
 {% block title %}PostBoxBundle:User:getAll{% endblock %}
 
 {% block body %}
-<h1>Welcome to the User:getAll page</h1>
-{% for user in allUsers %}
-    
-    {% include 'PostBoxBundle:User:get.html.twig' with {'user': user} %}
-    
-{% endfor %}
 
+{% for user in allUsers %}
+    <hr>
+{% embed 'PostBoxBundle:User:get.html.twig' with {'user': user} %}
+    {% block details %}{% endblock %}
+{% endembed %}
+    <hr>
+{% endfor %}
+<button onclick="location.href='/new'">New contact</button>
 {% endblock %}

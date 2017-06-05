@@ -6,8 +6,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use PostBoxBundle\Entity\Phone;
 use Symfony\Component\HttpFoundation\Request;
-use PostBoxBundle\Entity\User;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
+
 
 class PhoneController extends Controller
 {
@@ -27,10 +26,51 @@ class PhoneController extends Controller
         $em = $this->getDoctrine()->getManager();
         $em->persist($newPhone);
         $em->flush();
+        return $this->redirect("/".$user->getId());
         
-        return $this->render('PostBoxBundle:Phone:add_phone.html.twig', array(
-            // ...
+    }
+    
+    /**
+     * @Route("/{id}/modifyPhone")
+     */
+    public function modifyPhoneAction(Request $request, $id) {
+        
+        $repository = $this->getDoctrine()->getRepository('PostBoxBundle:Phone');
+        $phone = $repository->find($id);
+        
+        $form = $this->createFormBuilder($phone)
+                ->add('number', 'number')
+                ->add('type', 'text')
+                ->add('Update', 'submit')
+                ->getForm();
+        
+        $form->handleRequest($request);
+        
+        if ($form->isSubmitted()) {
+            $newPhone = $form->getData();
+            $em = $this->getDoctrine()->getManager();
+            $em->persist($newPhone);
+            $em->flush();
+            return $this->redirect("/".$phone->getUserId()->getId());
+        }
+        
+        return $this->render('PostBoxBundle:Phone:modify_phone.html.twig', array(
+            'form' => $form->createView()
         ));
     }
-
+    
+    /**
+     * @Route("/{id}/deletePhone")
+     */
+    public function deletePhoneAction($id) {
+        
+        $repository = $this->getDoctrine()->getRepository('PostBoxBundle:Phone');
+        $phone = $repository->find($id);
+        $userId = $phone->getUserId()->getId();
+        $em = $this->getDoctrine()->getManager();
+        $em->remove($phone);
+        $em->flush();
+        return $this->redirect("/".$userId);
+        
+    }
 }

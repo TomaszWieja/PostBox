@@ -3,10 +3,42 @@
 {% block title %}PostBoxBundle:User:get{% endblock %}
 
 {% block body %}
-<h1>Welcome to the User:get page</h1>
+    
+    {% block basic %}
 
-{{user.name}}
+<a href="/{{user.id}}">{{user.name}}</a>
 {{user.surname}}
 {{user.description}}
-
+<button onclick="location.href='{{user.id}}/modify'">Edit</button>
+<button onclick="location.href='{{user.id}}/delete'">Delete</button>
+   
+    {% endblock %}
+    
+{% block details %}
+    {% for address in addresses %}
+        <br>
+        {{address.city}}
+        {{address.street}}
+        {{address.blockNo}}
+        {{address.apartmentsNo}}
+        <a href="/{{ address.id }}/modifyAddress">Edit</a>
+        <a href="/{{ address.id }}/deleteAddress">Delete</a>
+        <br>
+    {% endfor %}
+    {% for email in emails %}
+        {{email.email}}
+        {{email.type}}
+        <a href="/{{ email.id }}/modifyEmail">Edit</a>
+        <a href="/{{ email.id }}/deleteEmail">Delete</a>
+        <br>
+    {% endfor %}
+    {% for phone in phones %}
+        {{phone.number}}
+        {{phone.type}}
+        <a href="/{{ phone.id }}/modifyPhone">Edit</a>
+        <a href="/{{ phone.id }}/deletePhone">Delete</a>
+        <br>
+    {% endfor %}
+    <button onclick="location.href='/'">List</button>
+{% endblock %}
 {% endblock %}
